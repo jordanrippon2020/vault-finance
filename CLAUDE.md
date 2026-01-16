@@ -1,7 +1,54 @@
 # Vault - Personal Finance Manager
 
+**Repository**: https://github.com/jordanrippon2020/vault-finance
+
 ## Project Overview
 Personal finance dashboard built with Next.js 16, connecting to Monzo bank for transaction tracking, budgeting, debt management, and net worth visualization.
+
+---
+
+## Development Workflow
+
+### Git Branching Strategy
+```
+main (production-ready)
+  └── feature/xxx (new features)
+  └── fix/xxx (bug fixes)
+  └── chore/xxx (maintenance, docs, refactoring)
+```
+
+### For Each Feature/Fix:
+1. **Create GitHub Issue** - Describe the work, add labels
+2. **Create feature branch** - `git checkout -b feature/issue-number-short-description`
+3. **Make commits** - Small, atomic commits with clear messages
+4. **Push & create PR** - Reference the issue (`Closes #123`)
+5. **Merge to main** - Squash merge to keep history clean
+
+### Commit Message Format
+```
+type(scope): description
+
+Types:
+- feat: New feature
+- fix: Bug fix
+- chore: Maintenance
+- docs: Documentation
+- refactor: Code restructure
+- test: Adding tests
+
+Examples:
+- feat(auth): add Supabase authentication
+- fix(transactions): correct date parsing for UK format
+- chore(deps): update dependencies
+```
+
+### GitHub Issue Labels
+- `enhancement` - New feature
+- `bug` - Something broken
+- `priority: high/medium/low`
+- `phase: 2/3/4`
+
+---
 
 ## Tech Stack
 - **Framework**: Next.js 16.1.2 (App Router) + TypeScript
@@ -104,6 +151,8 @@ source: text('source')                     // 'monzo_api' | 'monzo_sheets' | 'cs
 ```
 
 ## Current Status
+
+### Phase 1: Foundation (COMPLETE)
 - [x] Landing page with premium dark theme
 - [x] Dashboard overview with charts
 - [x] Transactions page with filters/pagination
@@ -112,47 +161,45 @@ source: text('source')                     // 'monzo_api' | 'monzo_sheets' | 'cs
 - [x] Net Worth page with asset/liability breakdown
 - [x] Settings page with preferences
 - [x] Database schema designed (Drizzle ORM)
-- [x] Monzo Google Sheets import (parser, importer, API route)
-- [x] Sync button in Settings page
-- [ ] Monzo API OAuth integration
-- [ ] Supabase authentication
-- [ ] Vercel deployment
+- [x] Monzo Google Sheets import (3,975 transactions)
+- [x] GitHub repository setup
 
-## Implementation Plan
+### Phase 2: Authentication & Data (IN PROGRESS)
+Track progress: https://github.com/jordanrippon2020/vault-finance/issues
 
-### Phase 1: Google Sheets Import (COMPLETE)
-1. [x] Discover sheet structure (tabs: Personal Account Transactions, Joint Account Transactions)
-2. [x] Build sheets import utility (`src/lib/sheets/`)
-   - `types.ts` - TypeScript types for Monzo sheet data
-   - `parser.ts` - Parse sheet rows to transaction format
-   - `import.ts` - Database import logic with deduplication
-3. [x] Create sync API route (`src/app/api/sync/sheets/route.ts`)
-4. [x] Add sync button to Settings page
+- [ ] #1 Add Supabase Authentication
+- [ ] #2 Wire transactions page to real database
+- [ ] #3 Wire budgets page to real data
+- [ ] #4 Wire net worth page to real data
+- [ ] #5 Import debt data from Google Sheets
 
-### Phase 2: Monzo API + Webhooks
-1. Register at developers.monzo.com
-2. Implement OAuth flow (`/api/auth/monzo/`)
-3. Initial transaction fetch (within 5min SCA window)
-4. Webhook setup (`/api/webhooks/monzo/`)
-5. Background sync via Vercel Cron
+### Phase 3: Monzo API Integration
+- [ ] #6 Implement Monzo OAuth flow
+- [ ] #7 Add Monzo webhook endpoint
+- [ ] #8 Token refresh background job
 
-### Phase 3: Polish
-- Sync status indicators
-- Error handling & retry logic
-- Category mapping (Monzo → App categories)
-- Conflict resolution for edits
+### Phase 4: Deployment & Polish
+- [ ] #9 Deploy to Vercel
+- [ ] #10 Add scheduled sync cron job
+- [ ] #11 Category management UI
+- [ ] #12 Mobile responsive refinements
 
-## API Routes (To Be Created)
+## API Routes
 
-| Route | Purpose |
-|-------|---------|
-| `GET /api/sync/sheets` | Sync from Google Sheets |
-| `GET /api/auth/monzo` | Initiate Monzo OAuth |
-| `GET /api/auth/monzo/callback` | Handle OAuth callback |
-| `POST /api/webhooks/monzo` | Receive transaction webhooks |
+| Route | Status | Purpose |
+|-------|--------|---------|
+| `POST /api/sync/sheets` | ✅ | Sync from Google Sheets |
+| `GET /api/auth/monzo` | Planned | Initiate Monzo OAuth |
+| `GET /api/auth/monzo/callback` | Planned | Handle OAuth callback |
+| `POST /api/webhooks/monzo` | Planned | Receive transaction webhooks |
+| `POST /api/cron/sync-sheets` | Planned | Scheduled sync |
+| `POST /api/cron/refresh-tokens` | Planned | Token refresh |
 
 ## References
+- [GitHub Issues](https://github.com/jordanrippon2020/vault-finance/issues)
 - [Monzo API Docs](https://docs.monzo.com/)
 - [Monzo Developer Portal](https://developers.monzo.com/)
+- [Supabase Auth Docs](https://supabase.com/docs/guides/auth)
 - [Drizzle ORM Docs](https://orm.drizzle.team/)
 - [shadcn/ui Components](https://ui.shadcn.com/)
+- [Vercel Cron Jobs](https://vercel.com/docs/cron-jobs)
