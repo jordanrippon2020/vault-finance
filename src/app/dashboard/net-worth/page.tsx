@@ -449,7 +449,7 @@ export default function NetWorthPage() {
                         borderColor: "oklch(0.25 0.02 260)",
                         borderRadius: "8px",
                       }}
-                      formatter={(value: number) => [formatCurrency(value), ""]}
+                      formatter={(value) => [formatCurrency(typeof value === 'number' ? value : 0), ""]}
                     />
                     <Area
                       type="monotone"
@@ -505,7 +505,7 @@ export default function NetWorthPage() {
                         borderColor: "oklch(0.25 0.02 260)",
                         borderRadius: "8px",
                       }}
-                      formatter={(value: number) => [formatCurrency(value), ""]}
+                      formatter={(value) => [formatCurrency(typeof value === 'number' ? value : 0), ""]}
                     />
                   </PieChart>
                 </ResponsiveContainer>
