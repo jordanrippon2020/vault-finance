@@ -291,8 +291,8 @@ export default function DashboardPage() {
                         boxShadow: "0 4px 12px oklch(0 0 0 / 0.3)",
                       }}
                       labelStyle={{ color: "oklch(0.6 0.02 260)" }}
-                      formatter={(value: number) => [
-                        `£${value.toLocaleString()}`,
+                      formatter={(value) => [
+                        `£${(typeof value === 'number' ? value : 0).toLocaleString()}`,
                         "Net Worth",
                       ]}
                     />
@@ -351,8 +351,8 @@ export default function DashboardPage() {
                         borderRadius: "8px",
                         boxShadow: "0 4px 12px oklch(0 0 0 / 0.3)",
                       }}
-                      formatter={(value: number) => [
-                        `£${value.toLocaleString()}`,
+                      formatter={(value) => [
+                        `£${(typeof value === 'number' ? value : 0).toLocaleString()}`,
                         "Spent",
                       ]}
                     />

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { importFromSheetData } from "@/lib/sheets";
+import { createClient } from "@/lib/supabase/server";
 
 // Monzo Transactions spreadsheet ID
 const SPREADSHEET_ID = "1m9Qi53V2fZwU-Fj9In4QSyiecx-qhdcW5BcLKtPKVM4";
@@ -8,7 +9,6 @@ const SPREADSHEET_ID = "1m9Qi53V2fZwU-Fj9In4QSyiecx-qhdcW5BcLKtPKVM4";
 const SHEETS_API_BASE = "https://sheets.googleapis.com/v4/spreadsheets";
 
 interface SyncRequest {
-  userId: string;
   sheetName?: string;
 }
 
@@ -51,15 +51,22 @@ async function fetchSheetData(
  */
 export async function POST(request: NextRequest) {
   try {
-    const body: SyncRequest = await request.json();
-    const { userId, sheetName = "Personal Account Transactions" } = body;
+    // Get authenticated user
+    const supabase = await createClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!userId) {
+    if (!user) {
       return NextResponse.json(
-        { error: "userId is required" },
-        { status: 400 }
+        { error: "Unauthorized - please log in" },
+        { status: 401 }
       );
     }
+
+    const userId = user.id;
+    const body: SyncRequest = await request.json();
+    const { sheetName = "Personal Account Transactions" } = body;
 
     // Get API key from environment
     const apiKey = process.env.GOOGLE_SHEETS_API_KEY;
