@@ -1,11 +1,12 @@
-import { getTransactions, getCategories } from "./actions";
+import { getTransactions, getCategories, getAccounts } from "./actions";
 import { TransactionsClient } from "./transactions-client";
 
 export default async function TransactionsPage() {
   // Fetch initial data on the server
-  const [transactionsData, categories] = await Promise.all([
+  const [transactionsData, categories, accounts] = await Promise.all([
     getTransactions({ page: 1, pageSize: 10 }),
     getCategories(),
+    getAccounts(),
   ]);
 
   return (
@@ -14,6 +15,7 @@ export default async function TransactionsPage() {
       initialStats={transactionsData.stats}
       initialTotal={transactionsData.total}
       categories={categories}
+      accounts={accounts}
     />
   );
 }

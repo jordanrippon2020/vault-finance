@@ -34,6 +34,7 @@ export interface GetTransactionsParams {
   category?: string
   startDate?: string
   endDate?: string
+  accountId?: string
 }
 
 export interface GetTransactionsResult {
@@ -52,7 +53,7 @@ export async function getTransactions(params: GetTransactionsParams = {}): Promi
     throw new Error('Unauthorized')
   }
 
-  const { page = 1, pageSize = 10, search, category, startDate, endDate } = params
+  const { page = 1, pageSize = 10, search, category, startDate, endDate, accountId } = params
   const offset = (page - 1) * pageSize
 
   // Get user's accounts
@@ -73,8 +74,10 @@ export async function getTransactions(params: GetTransactionsParams = {}): Promi
     }
   }
 
-  // Build where conditions
-  const conditions = [inArray(transactions.accountId, accountIds)]
+  // Build where conditions - filter by specific account if provided
+  const conditions = accountId
+    ? [eq(transactions.accountId, accountId)]
+    : [inArray(transactions.accountId, accountIds)]
 
   if (search) {
     conditions.push(
@@ -187,6 +190,37 @@ export async function getCategories() {
     })
     .from(categories)
     .orderBy(categories.name)
+
+  return result
+}
+
+export interface Account {
+  id: string
+  name: string
+  type: string
+  institution: string | null
+  balance: string
+}
+
+export async function getAccounts(): Promise<Account[]> {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+
+  if (!user) {
+    throw new Error('Unauthorized')
+  }
+
+  const result = await db
+    .select({
+      id: accounts.id,
+      name: accounts.name,
+      type: accounts.type,
+      institution: accounts.institution,
+      balance: accounts.balance,
+    })
+    .from(accounts)
+    .where(eq(accounts.userId, user.id))
+    .orderBy(accounts.name)
 
   return result
 }

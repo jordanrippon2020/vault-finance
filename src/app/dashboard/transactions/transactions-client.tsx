@@ -24,7 +24,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { getTransactions, type TransactionWithCategory, type TransactionStats } from "./actions";
+import { getTransactions, type TransactionWithCategory, type TransactionStats, type Account } from "./actions";
 
 interface Category {
   id: string;
@@ -38,6 +38,7 @@ interface TransactionsClientProps {
   initialStats: TransactionStats;
   initialTotal: number;
   categories: Category[];
+  accounts: Account[];
 }
 
 const container = {
@@ -58,12 +59,14 @@ export function TransactionsClient({
   initialStats,
   initialTotal,
   categories,
+  accounts,
 }: TransactionsClientProps) {
   const [transactions, setTransactions] = useState(initialTransactions);
   const [stats, setStats] = useState(initialStats);
   const [total, setTotal] = useState(initialTotal);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [selectedAccount, setSelectedAccount] = useState<string>("all");
   const [currentPage, setCurrentPage] = useState(1);
   const [isPending, startTransition] = useTransition();
   const itemsPerPage = 10;
@@ -71,13 +74,14 @@ export function TransactionsClient({
   const totalPages = Math.ceil(total / itemsPerPage);
 
   // Fetch transactions when filters change
-  const fetchTransactions = async (page: number, search: string, category: string) => {
+  const fetchTransactions = async (page: number, search: string, category: string, accountId: string) => {
     startTransition(async () => {
       const result = await getTransactions({
         page,
         pageSize: itemsPerPage,
         search: search || undefined,
         category: category !== "All" ? category : undefined,
+        accountId: accountId !== "all" ? accountId : undefined,
       });
       setTransactions(result.transactions);
       setStats(result.stats);
@@ -88,18 +92,24 @@ export function TransactionsClient({
   const handleSearch = (value: string) => {
     setSearchQuery(value);
     setCurrentPage(1);
-    fetchTransactions(1, value, selectedCategory);
+    fetchTransactions(1, value, selectedCategory, selectedAccount);
   };
 
   const handleCategoryChange = (category: string) => {
     setSelectedCategory(category);
     setCurrentPage(1);
-    fetchTransactions(1, searchQuery, category);
+    fetchTransactions(1, searchQuery, category, selectedAccount);
+  };
+
+  const handleAccountChange = (accountId: string) => {
+    setSelectedAccount(accountId);
+    setCurrentPage(1);
+    fetchTransactions(1, searchQuery, selectedCategory, accountId);
   };
 
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
-    fetchTransactions(page, searchQuery, selectedCategory);
+    fetchTransactions(page, searchQuery, selectedCategory, selectedAccount);
   };
 
   // Group by date
@@ -217,15 +227,43 @@ export function TransactionsClient({
         <Card className="border-border/50">
           <CardContent className="pt-6">
             <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              {/* Search */}
-              <div className="relative flex-1 md:max-w-sm">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-                <Input
-                  placeholder="Search transactions..."
-                  value={searchQuery}
-                  onChange={(e) => handleSearch(e.target.value)}
-                  className="pl-10"
-                />
+              {/* Account Selector */}
+              <div className="flex items-center gap-3">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="min-w-[180px] justify-between">
+                      {selectedAccount === "all"
+                        ? "All Accounts"
+                        : accounts.find((a) => a.id === selectedAccount)?.name || "Select Account"}
+                      <ChevronRight className="ml-2 h-4 w-4 rotate-90" />
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start" className="w-[200px]">
+                    <DropdownMenuItem onClick={() => handleAccountChange("all")}>
+                      All Accounts
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator />
+                    {accounts.map((account) => (
+                      <DropdownMenuItem
+                        key={account.id}
+                        onClick={() => handleAccountChange(account.id)}
+                      >
+                        {account.name}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Search */}
+                <div className="relative flex-1 md:max-w-sm">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    placeholder="Search transactions..."
+                    value={searchQuery}
+                    onChange={(e) => handleSearch(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
               </div>
 
               {/* Category Filter */}
