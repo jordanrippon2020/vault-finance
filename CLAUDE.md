@@ -167,22 +167,31 @@ source: text('source')                     // 'monzo_api' | 'monzo_sheets' | 'cs
 ### Phase 2: Authentication & Data (IN PROGRESS)
 Track progress: https://github.com/jordanrippon2020/vault-finance/issues
 
-- [ ] #1 Add Supabase Authentication
-- [ ] #2 Wire transactions page to real database
-- [ ] #3 Wire budgets page to real data
-- [ ] #4 Wire net worth page to real data
-- [ ] #5 Import debt data from Google Sheets
+- [x] #1 Add Supabase Authentication
+- [x] #2 Wire transactions page to real database
+- [x] #3 Wire dashboard overview to real data (partial - see TODO below)
+- [ ] #4 Wire budgets page to real data
+- [ ] #5 Wire net worth page to real data
+- [ ] #6 Import debt data from Google Sheets
+
+#### Dashboard TODO (add back later)
+The following components were removed from the dashboard and need to be re-added once their data sources are wired:
+- **Net Worth card** - requires `netWorthSnapshots` table or calculated from accounts
+- **Savings card** - requires accounts with type='savings' to have balances
+- **Total Debt card** - requires `debts` table to be populated
+- **Net Worth Trend chart** - requires historical snapshots
+- **Debt Breakdown section** - requires `debts` table with balances/APR/minimums
 
 ### Phase 3: Monzo API Integration
-- [ ] #6 Implement Monzo OAuth flow
-- [ ] #7 Add Monzo webhook endpoint
-- [ ] #8 Token refresh background job
+- [ ] #7 Implement Monzo OAuth flow
+- [ ] #8 Add Monzo webhook endpoint
+- [ ] #9 Token refresh background job
 
 ### Phase 4: Deployment & Polish
-- [ ] #9 Deploy to Vercel
-- [ ] #10 Add scheduled sync cron job
-- [ ] #11 Category management UI
-- [ ] #12 Mobile responsive refinements
+- [ ] #10 Deploy to Vercel
+- [ ] #11 Add scheduled sync cron job
+- [ ] #12 Category management UI
+- [ ] #13 Mobile responsive refinements
 
 ## API Routes
 
